@@ -25,7 +25,9 @@ interface IERC20 {
     event Approval(address indexed owner, address indexed spender, uint value);
 }
 
-contract ERC20 is Initializable, OwnableUpgradeable {
+contract ERC20 is Initializable, IERC20, OwnableUpgradeable {
+    uint public _totalSupply;
+    mapping(address => uint) public _balances;
     string private _name;
     string private _symbol;
 
@@ -33,5 +35,13 @@ contract ERC20 is Initializable, OwnableUpgradeable {
         _name = 'ERC20Token';
         _symbol = 'ERC';
         __Ownable_init();
+    }
+
+    function totalSupply() external view returns (uint) {
+        return _totalSupply;
+    }
+
+    function balanceOf(address account) external view returns (uint) {
+        return _balances[account];
     }
 }
