@@ -1,0 +1,1 @@
+This repository holds the contract code for an upgradeable token that implements the ERC20 token standard.
