@@ -6,20 +6,20 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "./IERC20.sol";
 
 contract ERC20 is Initializable, IERC20, OwnableUpgradeable {
-    uint public _totalSupply;
-    mapping(address => uint) public _balances;
-    mapping(address => mapping(address => uint256)) public _allowances;
+    uint256 private _totalSupply;
+    mapping(address => uint256) private _balances;
+    mapping(address => mapping(address => uint256)) private _allowances;
 
-    string public _name;
-    string public _symbol;
+    string public name;
+    string public symbol;
 
     /**
      * @dev Initializes the contract. This defines the {name} and {symbol} of the token, as well
      * as making the contract ownable.
     */
-    function initialize() external initializer {
-        _name = 'ERC20Token';
-        _symbol = 'ERC';
+    function initialize(string calldata _name, string calldata _symbol) external initializer {
+        name = _name;
+        symbol = _symbol;
         __Ownable_init();
     }
 
@@ -37,14 +37,14 @@ contract ERC20 is Initializable, IERC20, OwnableUpgradeable {
     /**
      * @dev Returns the total number of tokens that exist
     */
-    function totalSupply() external view returns (uint) {
+    function totalSupply() external view returns (uint256) {
         return _totalSupply;
     }
 
     /**
      * @dev Returns the amount of tokens owned by the 'account'
     */
-    function balanceOf(address account) external view returns (uint) {
+    function balanceOf(address account) external view returns (uint256) {
         return _balances[account];
     }
 
@@ -55,7 +55,7 @@ contract ERC20 is Initializable, IERC20, OwnableUpgradeable {
      *
      * Emits a {Transfer} event.
     */
-    function transfer(address recipient, uint amount) external returns (bool) {
+    function transfer(address recipient, uint256 amount) external returns (bool) {
         _balances[msg.sender] -= amount;
         _balances[recipient] += amount;
         emit Transfer(msg.sender, recipient, amount);
@@ -67,7 +67,7 @@ contract ERC20 is Initializable, IERC20, OwnableUpgradeable {
      * spend on behalf of `owner`.  This is zero by default. The value changes 
      * when {approve} or {transferFrom} are called
      */
-    function allowance(address owner, address spender) external view returns (uint) {
+    function allowance(address owner, address spender) external view returns (uint256) {
         return _allowances[owner][spender];
     }
 
@@ -83,7 +83,7 @@ contract ERC20 is Initializable, IERC20, OwnableUpgradeable {
      *
      * Emits a {Approval} event.
     */
-    function approve(address spender, uint amount) external returns (bool) {
+    function approve(address spender, uint256 amount) external returns (bool) {
         _allowances[msg.sender][spender] = amount;
         emit Approval(msg.sender, spender, amount);
         return true;
@@ -101,7 +101,7 @@ contract ERC20 is Initializable, IERC20, OwnableUpgradeable {
     function transferFrom(
         address sender,
         address recipient,
-        uint amount
+        uint256 amount
     ) external returns (bool) {
         _allowances[sender][msg.sender] -= amount;
         _balances[sender] -= amount;
@@ -116,7 +116,7 @@ contract ERC20 is Initializable, IERC20, OwnableUpgradeable {
      *
      * Emits a {Transfer} event.
     */
-    function _mint(uint amount, address account) internal virtual {
+    function _mint(uint256 amount, address account) internal virtual {
         _totalSupply += amount;
         _balances[account] += amount;
         emit Transfer(address(0), msg.sender, amount);
@@ -128,7 +128,7 @@ contract ERC20 is Initializable, IERC20, OwnableUpgradeable {
      * 
      * Emits a {Transfer} event.
     */
-    function _burn(uint amount) internal virtual {
+    function _burn(uint256 amount) internal virtual {
         _balances[msg.sender] -= amount;
         _totalSupply -= amount;
         emit Transfer(address(0), msg.sender, amount);
