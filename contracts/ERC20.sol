@@ -24,6 +24,17 @@ contract ERC20 is Initializable, IERC20, OwnableUpgradeable {
     }
 
     /**
+     * @dev Returns the total number decimals that the token has. 
+     * For example, if 'decimals' equals '2', then a balance of '250' tokens should
+     * be displayed to the user as '2.5' (250 / 10 ** 2).
+     *
+     * This function can be overridden to change the amont of decimals a token should have.
+    */
+    function deciamls() public view virtual returns (uint8) {
+        return 18;
+    }
+
+    /**
      * @dev Returns the total number of tokens that exist
     */
     function totalSupply() external view returns (uint) {
