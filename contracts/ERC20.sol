@@ -55,4 +55,24 @@ contract ERC20 is Initializable, IERC20, OwnableUpgradeable {
         emit Transfer(sender, recipient, amount);
         return true;
     }
+
+    /**
+     * @dev Used to mint new token supply. This implementation is marked as virtual
+     * to allow a consuming contract to define its implementation.
+    */
+    function _mint(uint amount, address account) internal virtual {
+        _totalSupply += amount;
+        _balances[account] += amount;
+        emit Transfer(address(0), msg.sender, amount);
+    }
+
+    /**
+     * @dev Used to burn tokens from the total supply. This method is marked as virtual
+     * to allow a consuming contract to define its implementation.
+    */
+    function _burn(uint amount) internal virtual {
+        _balances[msg.sender] -= amount;
+        _totalSupply -= amount;
+        emit Transfer(address(0), msg.sender, amount);
+    }
 }
