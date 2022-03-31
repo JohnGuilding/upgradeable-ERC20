@@ -3,9 +3,9 @@ pragma solidity ^0.8.10;
 
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
-import "./IERC20.sol";
+import "./IToken.sol";
 
-contract ERC20 is Initializable, IERC20, OwnableUpgradeable {
+contract Token is Initializable, IToken, OwnableUpgradeable {
     uint256 private _totalSupply;
     mapping(address => uint256) private _balances;
     mapping(address => mapping(address => uint256)) private _allowances;
@@ -17,9 +17,11 @@ contract ERC20 is Initializable, IERC20, OwnableUpgradeable {
      * @dev Initializes the contract. This defines the {name} and {symbol} of the token, as well
      * as making the contract ownable.
     */
-    function initialize(string calldata _name, string calldata _symbol) external initializer {
+    function initialize(string memory _name, string memory _symbol, uint256 _initialSupply) external initializer {
         name = _name;
         symbol = _symbol;
+        _totalSupply = _initialSupply;
+        _balances[msg.sender] = _totalSupply;
         __Ownable_init();
     }
 
@@ -30,7 +32,7 @@ contract ERC20 is Initializable, IERC20, OwnableUpgradeable {
      *
      * This function can be overridden to change the amont of decimals a token should have.
     */
-    function deciamls() public view virtual returns (uint8) {
+    function decimals() public view virtual returns (uint8) {
         return 18;
     }
 
@@ -103,11 +105,21 @@ contract ERC20 is Initializable, IERC20, OwnableUpgradeable {
         address recipient,
         uint256 amount
     ) external returns (bool) {
-        _allowances[sender][msg.sender] -= amount;
-        _balances[sender] -= amount;
-        _balances[recipient] += amount;
-        emit Transfer(sender, recipient, amount);
-        return true;
+        uint256 currentAllowance = this.allowance(recipient, sender);
+
+        if (currentAllowance != type(uint256).max) {
+            require(currentAllowance >= amount, 'Insufficient allowance');
+            unchecked {
+                _allowances[recipient][sender] -= amount;
+                _balances[sender] -= amount;
+                _balances[recipient] += amount;
+
+                emit Transfer(sender, recipient, amount);
+                return true;
+            }
+        }
+        
+        return false;
     }
 
     /**
